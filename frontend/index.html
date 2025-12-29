@@ -6,31 +6,136 @@
     <title>RM Padang - Minang Pride</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body { font-family: 'Poppins', sans-serif; }
-        .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1541544741938-0af808871cc0?q=80&w=2044&auto=format&fit=crop');
-            background-size: cover; height: 60vh; display: flex; align-items: center; color: white;
+        
+        /* NAVBAR UTAMA */
+        .navbar {
+            transition: transform 0.4s ease-in-out;
+            position: fixed;
+            top: 0; width: 100%; z-index: 1030;
+            padding: 1px 0;
+            border-bottom: none; 
         }
-        .card-menu { border: none; transition: 0.3s; border-radius: 15px; overflow: hidden; }
+        .navbar-hidden { transform: translateY(-100%); }
+
+        .navbar-brand {
+            color: yellow !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* LOGO STYLE */
+        .navbar-logo {
+            height: 45px;
+            width: auto;
+            margin-right: -1px;
+            object-fit: contain;
+            margin-top: -5px; 
+            margin-bottom: -5px;
+        }
+
+        /* KHUSUS MOBILE & TABLET */
+        @media (max-width: 991.98px) {
+            .navbar .container {
+                border-bottom: 2px solid #000 !important; 
+                padding-bottom: 10px;
+                max-width: 100% !important;
+                width: 100% !important;
+                display: flex;
+            }
+            .navbar-collapse {
+                background-color: #D42400; 
+                padding: 0 15px 15px 15px;
+            }
+            .navbar-nav {
+                align-items: stretch !important;
+                width: 100%;
+                padding-top: 5px;
+            }
+            .nav-item {
+                display: block;
+                width: 100%;
+                border-bottom: 1px solid #000 !important; 
+            }
+            .nav-link {
+                color: white !important;
+                padding: 15px 10px !important;
+                font-size: 1.2rem;
+                font-weight: 500;
+            }
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://rajominang.id/blog/uploads/images/202410/image_750x_671d85ac84f60.jpg');
+            background-size: cover; height: 60vh; display: flex; align-items: center; color: white;
+            border: #000;
+            background-blend-mode: darken;
+            margin-top: 65px;
+        }
+        
+        /* CARD MENU */
+        .card-menu { border: none; transition: 0.3s; border-radius: 15px; overflow: hidden; height: 100%; }
         .card-menu:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        /* CART & BADGE */
+        .cart-wrapper {
+            position: relative; display: inline-block; cursor: pointer;
+            padding: 8px 10px; transition: all 0.3s ease;
+        }
+        .cart-wrapper i { font-size: 1.4rem; color: white; }
+        .cart-badge {
+            position: absolute; top: -5px; right: -5px;
+            background-color: #ffc107; color: #000;
+            font-size: 0.7rem; font-weight: bold;
+            min-width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #dc3545;
+        }
+
+        .receipt-paper {
+            background: #fff; padding: 30px; border: 1px solid #bbb;
+            font-family: 'Courier New', Courier, monospace; position: relative;
+        }
+
+        /* MAPS CONTAINER */
+        .map-container {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-danger shadow">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-3" href="#">PADSKUY</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark bg-danger shadow">
+    <div class="container d-flex align-items-center">
+        <img src="assets/Gemini_Generated_Image_uoyfnvuoyfnvuoyf-removebg-preview (1).png" alt="Logo" height="80" width="80">
+        <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="#">
+            <span>PADSKUY</span>
+        </a>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <div class="cart-wrapper me-2 d-lg-none" onclick="openCart()">
+                <i class="bi bi-cart-fill"></i>
+                <span class="cart-count-val cart-badge">0</span>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto gap-3">
+            <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                 <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
-                <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
-                <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
-                <li id="auth-section">
-                    <button class="btn btn-warning rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                <li class="nav-item"><a class="nav-link" href="#tentang">Tentang Kami</a></li>
+                <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+                <li class="d-none d-lg-block">
+                    <div class="cart-wrapper" onclick="openCart()">
+                        <i class="bi bi-cart-fill"></i>
+                        <span class="cart-count-val cart-badge">0</span>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -39,87 +144,134 @@
 
 <header id="beranda" class="hero-section text-center">
     <div class="container">
-        <h1 class="display-3 fw-bold">Tambuah Ciek!</h1>
+        <h1 class="display-3 fw-bold">TAMBUAH CIEK DA!</h1>
         <p class="lead">Cita rasa asli Minangkabau dengan bumbu rempah pilihan.</p>
-        <a href="#menu" class="btn btn-danger btn-lg rounded-pill px-5">Pesan Sekarang</a>
+        <a href="#makanan" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold">Pesan Sekarang</a>
     </div>
 </header>
 
 <section class="container my-5">
-    <h2 class="text-center fw-bold mb-4">Menu Best Seller</h2>
-    <div class="row g-4" id="best-seller-list">
-        </div>
+    <h2 class="text-center fw-bold mb-4">:| BEST SELLER |:</h2>
+    <div class="row g-4" id="best-seller-list"></div>
 </section>
 
-<section id="menu" class="bg-light py-5">
+<section id="makanan" class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5">Daftar Menu Makanan & Minuman</h2>
-        <div class="row g-4" id="all-menu-list"></div>
+        <h2 class="text-center fw-bold mb-5">| DAFTAR MENU MAKANAN |</h2>
+        <div class="row g-4" id="food-list"></div>
     </div>
 </section>
-
-<div class="modal fade" id="loginModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0">
-            <div class="modal-body p-5">
-                <h3 class="fw-bold mb-4" id="modalTitle">Masuk</h3>
-                <input type="text" id="username" class="form-control mb-3" placeholder="Username">
-                <input type="password" id="password" class="form-control mb-4" placeholder="Password">
-                <button class="btn btn-danger w-100 py-2 mb-3" onclick="handleAuth()">Submit</button>
-                <p class="text-center small">Belum punya akun? <a href="#" onclick="toggleAuthMode()">Daftar</a></p>
-            </div>
-        </div>
+G
+<section id="minuman" class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">| DAFTAR MENU MINUMAN |</h2>
+        <div class="row g-4" id="drink-list"></div>
     </div>
-</div>
-
-<div class="modal fade" id="checkoutModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Checkout & Booking</h5></div>
-            <div class="modal-body">
-                <p id="orderDetail"></p>
-                <select id="type" class="form-select mb-3">
-                    <option value="Takeaway">Bungkus (Takeaway)</option>
-                    <option value="Dine-in">Booking Makan di Tempat</option>
-                </select>
-                <input type="datetime-local" id="date" class="form-control mb-3">
-            </div>
-            <div class="modal-footer border-0">
-                <button class="btn btn-success w-100" onclick="submitOrder()">Konfirmasi Pesanan</button>
-            </div>
-        </div>
-    </div>
-</div>
+</section>
 
 <footer id="tentang" class="bg-dark text-white py-5">
-    <div class="container text-center">
-        <h3>RM Minang Pride</h3>
-        <p>Restoran Padang terpercaya sejak 1998.</p>
-        <div class="mt-3">
-            <p>Kontak: 0812-3456-7890 | @minangpride_id</p>
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-md-5">
+                <h3 class="fw-bold text-warning mb-3">RM PADSKUY</h3>
+                <p class="mb-2"><i class="bi bi-geo-alt-fill me-2 text-warning"></i><a href="https://maps.google.com" target="_blank">Jl. Raya Minangkabau No. 123, Padang</a></p>
+                <p class="mb-2" id="wa"><i class="bi bi-telephone-fill me-2 text-warning"></i> <a href="https://wa.me/6285591546882" target="_blank">0855-9154-6882</a></p>
+                <p class="mb-4" id="instagram"><i class="bi bi-instagram me-2 text-warning"></i> <a href="https://www.instagram.com/rvino_23/" target="_blank">@rvino_23</a></p>
+                <div class="d-flex gap-3 fs-4">
+                    <a href="https://www.facebook.com/radel.arvino?locale=id_ID" target="_blank" class="text-white"><i class="bi bi-facebook" ></i></a>
+                    <a href="https://wa.me/6285591546882" target="_blank" class="text-white"><i class="bi bi-whatsapp"></i></a>
+                    <a href="https://www.tiktok.com/@ravins221" target="_blank" class="text-white"><i class="bi bi-tiktok"> </i></a>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="map-container ratio ratio-21x9">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127672.24719266714!2d100.3204996843477!3d-0.9345809315024765!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2fd4b9221598076d%3A0x3039d80b220cc30!2sKota%20Padang%2C%20Sumatera%20Barat!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-5 border-secondary">
+        <div class="text-center">
+            <small class="text-secondary">© 2025 PADSKUY Resto - Rasa Minang Asli.</small>
         </div>
     </div>
 </footer>
 
+<div class="modal fade" id="checkoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0"><h5 class="modal-title fw-bold">Isi Keranjang</h5></div>
+            <div class="modal-body">
+                <div id="cartDetail"></div>
+                <hr>
+                <label class="small fw-bold">Tipe Pesanan:</label>
+                <select id="type" class="form-select mb-3" onchange="toggleDateInput()">
+                    <option value="Takeaway">Bungkus (Takeaway)</option>
+                    <option value="Dine-in">Makan di Tempat</option>
+                </select>
+                <div id="date-group" style="display: none;">
+                    <label class="small fw-bold">Waktu Pengambilan:</label>
+                    <input type="datetime-local" id="date" class="form-control mb-3">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button class="btn btn-success w-100" onclick="submitOrder()">Beli Sekarang</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="strukModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 bg-light">
+            <div class="modal-body p-4">
+                <div class="receipt-paper" id="strukContent"></div>
+                <div class="mt-4">
+                    <button class="btn btn-danger w-100" onclick="window.location.reload()">Selesai & Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>// script.js
+<script>
+let lastScrollY = window.scrollY;
+const navbar = document.getElementById("mainNavbar");
+window.addEventListener("scroll", () => {
+    window.scrollY > lastScrollY ? navbar.classList.add("navbar-hidden") : navbar.classList.remove("navbar-hidden");
+    lastScrollY = window.scrollY;
+});
 
 const menus = [
-    {id: 1, n: 'Rendang', p: 25000, b: true, img: 'https://images.unsplash.com/photo-1626776876729-bab4e2233170?w=500&auto=format&fit=crop&q=60'},
-    {id: 2, n: 'Ayam Pop', p: 22000, b: true, img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=60'},
-    {id: 3, n: 'Teh Talua', p: 12000, b: false, img: 'https://images.unsplash.com/photo-1544782707-160a2b005370?w=500&auto=format&fit=crop&q=60'}
+    {id: 1, n: 'Rendang Daging', p: 20000, b: true, type: 'food', img: 'https://fibercreme.com/wp-content/uploads/2024/10/Rendang-Daging-500x500.jpeg'},
+    {id: 2, n: 'Gulai Tambusu', p: 25000, b: true, type: 'food', img: 'https://lifestyle.haluan.co/wp-content/uploads/2025/01/Gulai-Tambusu.jpg'},
+    {id: 3, n: 'Ayam Bakar', p: 15000, b: true, type: 'food', img: 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=60'},
+    {id: 4, n: 'Gulai Tunjang', p: 13000, b: false, type: 'food', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPelt1dA7mxFvXdrJZknY7EReuMKZjunD2sg&s'},
+    {id: 5, n: 'Daging Cincang', p: 12000, b: false, type: 'food', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRg9feO_t6C376gl2T9FW-tLnNyBurlXZgZvg&s'},
+    {id: 6, n: 'Dendeng Balado', p: 21000, b: false, type: 'food', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY7-nCxGQYm7Abtv86fnwkEOF0GjLpQQj9cg&s'},
+    {id: 7, n: 'Teh Talua', p: 10000, b: false, type: 'drink', img: 'https://image.idntimes.com/post/20230706/img-20230706-182507-67ea51e2ccf1a2fbebe00d8754f394b6-f60b691ee486598400f39802938b8a80.jpg'},
+    {id: 8, n: 'Es Jeruk', p: 6000, b: false, type: 'drink', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&q=60'},
+    {id: 9, n: 'Es Teh Manis', p: 5000, b: false, type: 'drink', img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&q=60'}
 ];
 
-let userActive = null;
-let authMode = 'login';
-let currentItem = {};
+let cart = [];
+
+function toggleDateInput() {
+    const type = document.getElementById('type').value;
+    document.getElementById('date-group').style.display = (type === 'Dine-in') ? 'block' : 'none';
+}
 
 function renderMenu() {
     const bestSellerList = document.getElementById('best-seller-list');
-    const allMenuList = document.getElementById('all-menu-list');
-
-    if (!bestSellerList || !allMenuList) return;
-
+    const foodList = document.getElementById('food-list');
+    const drinkList = document.getElementById('drink-list');
+    
     menus.forEach(m => {
         const card = `
             <div class="col-md-4">
@@ -127,110 +279,65 @@ function renderMenu() {
                     <img src="${m.img}" class="card-img-top" style="height:200px; object-fit:cover;">
                     <div class="card-body text-center">
                         <h5 class="fw-bold">${m.n}</h5>
-                        <p class="text-danger">Rp ${m.p.toLocaleString()}</p>
-                        <button class="btn btn-danger btn-sm rounded-pill" onclick="preCheckout('${m.n}', ${m.p})">Pesan</button>
+                        <p class="text-danger fw-bold">Rp ${m.p.toLocaleString()}</p>
+                        <button class="btn btn-danger btn-sm rounded-pill px-4" onclick="addToCart(${m.id})">
+                            <i class="bi bi-plus-lg"></i> Tambah
+                        </button>
                     </div>
                 </div>
-            </div>
-        `;
-        if (m.b) bestSellerList.innerHTML += card;
-        allMenuList.innerHTML += card;
+            </div>`;
+        if(m.b) bestSellerList.innerHTML += card;
+        if(m.type === 'food') { foodList.innerHTML += card; } else { drinkList.innerHTML += card; }
     });
 }
 
-function toggleAuthMode() {
-    authMode = (authMode === 'login') ? 'register' : 'login';
-    const modalTitle = document.getElementById('modalTitle');
-    const authButton = document.getElementById('authButton');
-
-    if (modalTitle) {
-        modalTitle.innerText = (authMode === 'login') ? 'Masuk' : 'Daftar Akun Baru';
-    }
-    if (authButton) {
-        authButton.innerText = (authMode === 'login') ? 'Masuk' : 'Daftar';
-    }
+function addToCart(id) {
+    const item = menus.find(m => m.id === id);
+    const inCart = cart.find(c => c.id === id);
+    inCart ? inCart.qty++ : cart.push({...item, qty: 1});
+    document.querySelectorAll('.cart-count-val').forEach(c => c.innerText = cart.reduce((a, b) => a + b.qty, 0));
 }
 
-async function handleAuth() {
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-
-    if (!usernameInput || !passwordInput) return;
-
-    const url = authMode === 'login' ? '/api/login' : '/api/register';
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            username: usernameInput.value,
-            password: passwordInput.value
-        })
+function openCart() {
+    if(cart.length === 0) return alert("Keranjang kosong!");
+    let total = 0, html = '<ul class="list-group list-group-flush">';
+    cart.forEach(item => {
+        total += (item.p * item.qty);
+        // PERUBAHAN DI SINI: Menyusun nama dan qty agar sejajar
+        html += `
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                    <h6 class="mb-0 d-inline-block">${item.n}</h6>
+                    <small class="ms-2 text-muted">${item.qty}x</small>
+                </div>
+                <b>Rp ${(item.p * item.qty).toLocaleString()}</b>
+            </li>`;
     });
-
-    const data = await res.json();
-    if (data.success) {
-        userActive = data.user || 'User';
-        const authSection = document.getElementById('auth-section');
-        if (authSection) {
-            authSection.innerHTML = `<span class="text-white">Halo, ${userActive}</span>`;
-        }
-        const loginModal = document.getElementById('loginModal');
-        if (loginModal) {
-            bootstrap.Modal.getInstance(loginModal).hide();
-        }
-    } else {
-        alert(data.msg);
-    }
+    html += `<li class="list-group-item d-flex justify-content-between bg-light fw-bold"><span>TOTAL</span><span>Rp ${total.toLocaleString()}</span></li></ul>`;
+    document.getElementById('cartDetail').innerHTML = html;
+    new bootstrap.Modal(document.getElementById('checkoutModal')).show();
 }
 
-function preCheckout(nama, harga) {
-    if (!userActive) {
-        alert("Silakan Login Terlebih Dahulu!");
-        return;
-    }
-
-    currentItem = { nama, harga };
-
-    const orderDetail = document.getElementById('orderDetail');
-    if (orderDetail) {
-        orderDetail.innerText = `Anda memesan: ${nama} (Rp ${harga.toLocaleString()})`;
-    }
-
-    const checkoutModalEl = document.getElementById('checkoutModal');
-    if (checkoutModalEl) {
-        new bootstrap.Modal(checkoutModalEl).show();
-    }
-}
-
-async function submitOrder() {
-    const typeInput = document.getElementById('type');
-    const dateInput = document.getElementById('date');
-
-    if (!typeInput || !dateInput) return;
-
-    const payload = {
-        username: userActive,
-        items: currentItem.nama,
-        total: currentItem.harga,
-        type: typeInput.value,
-        date: dateInput.value
-    };
-
-    const res = await fetch('/api/order', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
+function submitOrder() {
+    const type = document.getElementById('type').value;
+    let dateInput = document.getElementById('date').value;
+    if(type === 'Dine-in' && !dateInput) return alert("Pilih waktu!");
+    bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+    let total = 0, itemStruk = "";
+    cart.forEach(item => {
+        total += (item.p * item.qty);
+        itemStruk += `<div class="d-flex justify-content-between small"><span>${item.n} x${item.qty}</span><span>Rp ${(item.p * item.qty).toLocaleString()}</span></div>`;
     });
-
-    const data = await res.json();
-    alert(data.msg);
-    location.reload();
+    let waktuHTML = type === 'Dine-in' ? `<div><b>Waktu:</b> ${dateInput.replace('T', ' ')}</div>` : "";
+    document.getElementById('strukContent').innerHTML = `
+        <div class="text-center"><h5 class="fw-bold mb-0">PADSKUY RESTO</h5><small>Minang Pride</small></div><hr>
+        <div class="small mb-3">${waktuHTML}<div><b>Tipe:</b> ${type}</div></div>
+        ${itemStruk}<hr>
+        <div class="d-flex justify-content-between fw-bold"><span>TOTAL</span><span>Rp ${total.toLocaleString()}</span></div>`;
+    new bootstrap.Modal(document.getElementById('strukModal')).show();
 }
 
-// Jalankan setelah halaman selesai dimuat
-document.addEventListener('DOMContentLoaded', () => {
-    renderMenu();
-});
+renderMenu();
 </script>
 </body>
 </html>
