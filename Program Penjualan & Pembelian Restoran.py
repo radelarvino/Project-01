@@ -110,7 +110,6 @@ def menu_user(nama):
                     elif qty <= 0:
                         print("Pembelian minimal 1.")
                     else:
-                        # PENGURANGAN STOK OTOMATIS
                         menu_rm[pilih][2] -= qty
                         subtotal = menu_rm[pilih][1] * qty
                         total_bayar += subtotal
