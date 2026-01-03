@@ -1,9 +1,7 @@
 import os
 import getpass
-import sys
 
-
-# 1.DATABASE
+# 1. DATABASE
 akun_db = {
     "admin1": {"password": "123", "role": "admin"},
     "user1": {"password": "123", "role": "user"}
@@ -23,8 +21,7 @@ menu_rm = {
 }
 
 
-#FUNGSI UTILITY (Pembantu)
-
+# 2. FUNGSI UTILITY
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -45,10 +42,10 @@ def tampilkan_tabel_menu():
 
 
 # 3. FITUR ADMIN
-def menu_admin(nama):
+def menu_admin(nama_admin):
     while True:
         clear()
-        print(f"DASHBOARD ADMIN: {nama.upper()}")
+        print(f"DASHBOARD ADMIN: {nama_admin.upper()}")
         print("[1] Lihat & Tambah Stok")
         print("[2] Tambah Produk Baru")
         print("[0] Logout")
@@ -86,13 +83,13 @@ def menu_admin(nama):
 
 
 # 4. FITUR USER
-def menu_user(nama):
+def menu_user(nama_user):
     keranjang = []
     total_bayar = 0
     
     while True:
         clear()
-        print(f"HALO {nama.upper()}, SELAMAT DATANG DI RM PADSKUY!")
+        print(f"HALO {nama_user.upper()}, SELAMAT DATANG DI RM PADSKUY!")
         tampilkan_tabel_menu()
         print("(Ketik '0' untuk selesai dan cetak struk)")
         
@@ -139,24 +136,51 @@ def main():
     while True:
         clear()
         garis()
-        print(f"{'LOGIN SISTEM RM PADSKUY':^50}")
+        print(f"{'SELAMAT DATANG DI RM PADSKUY':^50}")
         garis()
-        user = input("Username: ")
-        
-        if user in akun_db:
-            pw = getpass.getpass("Password: ")
-            if akun_db[user]["password"] == pw:
-                # Cek Role
+        print("[1] Login")
+        print("[2] Register")
+        print("[0] Keluar Aplikasi")
+        opsi = input("Pilih Opsi > ")
+
+        if opsi == "1":
+            clear()
+            garis()
+            print(f"{'MASUK AKUN':^50}")
+            garis()
+            user = input("Username: ")
+            password = getpass.getpass("Password: ")
+            
+            if user in akun_db and akun_db[user]["password"] == password:
                 if akun_db[user]["role"] == "admin":
                     menu_admin(user)
                 else:
                     menu_user(user)
             else:
-                print("\n[!] Password salah!")
-                input("Enter...")
-        else:
-            print("\n[!] Akun tidak terdaftar!")
-            input("Enter...")
+                print("\nLogin gagal! Username atau password salah.")
+                input("Tekan Enter untuk kembali...")
+
+        elif opsi == "2":
+            clear()
+            garis()
+            print(f"{'DAFTAR AKUN BARU':^50}")
+            garis()
+            user = input("Username Baru: ")
+            if user in akun_db:
+                print("Username sudah terdaftar!")
+            else:
+                password = input("Password Baru: ")
+                role = input("Role (admin/user): ").lower()
+                if role in ["admin", "user"]:
+                    akun_db[user] = {"password": password, "role": role}
+                    print(f"✔ Registrasi berhasil sebagai {role.upper()}!")
+                else:
+                    print("Role tidak valid!")
+            input("Tekan Enter untuk kembali...")
+
+        elif opsi == "0":
+            print("sampai jumpo!")
+            break
 
 if __name__ == "__main__":
     main()
