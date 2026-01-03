@@ -1,25 +1,7 @@
+from migrate import migrate
+from db import fetch_all, fetch_one, execute
 import os
 import getpass
-
-# 1. DATABASE
-akun_db = {
-    "admin1": {"password": "123", "role": "admin"},
-    "user1": {"password": "123", "role": "user"}
-}
-
-# Format: ID: [Nama, Harga, Stok]
-menu_rm = {
-    1: ["Rendang", 13000, 10],
-    2: ["Ayam Pop", 12000, 15],
-    3: ["Gulai Ayam", 14000, 8],
-    4: ["Ikan Bakar", 25000, 5],
-    5: ["Sate Padang", 35000, 12],
-    6: ["Telur Balado", 7000, 20],
-    7: ["Nasi Putih", 3000, 50],
-    8: ["Teh Manis", 5000, 30],
-    9: ["Es Jeruk", 5000, 15]
-}
-
 
 # 2. FUNGSI UTILITY
 def clear():
@@ -32,14 +14,35 @@ def format_rupiah(angka):
     return f"Rp{angka:,.0f}".replace(",", ".")
 
 def tampilkan_tabel_menu():
+    data_menu = fetch_all("SELECT * FROM menus")
+
     garis()
     print(f"{'ID':<4} | {'Nama Menu':<20} | {'Harga':<12} | {'Stok'}")
     garis()
-    for id_m, data in menu_rm.items():
-        stok = "HABIS" if data[2] <= 0 else data[2]
-        print(f"{id_m:<4} | {data[0]:<20} | {format_rupiah(data[1]):<12} | {stok}")
+
+    for m in data_menu:
+        stock = "HABIS" if m["stock"] <= 0 else m["stock"]
+        print(f"{m['id']:<4} | {m['name']:<20} | {format_rupiah(m['price']):<12} | {stock}")
+
     garis()
 
+def restock_menu(id_menu, quantity):
+    execute(
+            "UPDATE menus SET stock = stock + ? WHERE id = ?",
+            (quantity, id_menu)
+            )
+
+def add_menu(name, price, stock):
+    execute(
+            "INSERT INTO menus (name, price, stock) VALUES (?, ?, ?)",
+            (name, price, stock)
+            )
+
+def register_user(username, password, role):
+    execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            (username, password, role)
+            )
 
 # 3. FITUR ADMIN
 def menu_admin(nama_admin):
@@ -56,9 +59,13 @@ def menu_admin(nama_admin):
             tampilkan_tabel_menu()
             try:
                 id_m = int(input("Masukkan ID Menu untuk restok: "))
-                if id_m in menu_rm:
-                    tambah = int(input(f"Jumlah stok tambahan untuk {menu_rm[id_m][0]}: "))
-                    menu_rm[id_m][2] += tambah
+                menu = fetch_one("SELECT * FROM menus WHERE id = ?", (id_m,))
+
+                if menu:
+                    quantity = int(input(f"Jumlah stok tambahan: "))
+
+                    restock_menu(id_m, quantity)
+
                     print("✔ Stok berhasil diperbarui!")
                 else:
                     print("ID tidak ditemukan.")
@@ -68,11 +75,12 @@ def menu_admin(nama_admin):
             
         elif pilih == "2":
             try:
-                id_baru = max(menu_rm.keys()) + 1
                 nama_p = input("Nama Produk Baru: ")
                 harga_p = int(input("Harga: "))
                 stok_p = int(input("Stok Awal: "))
-                menu_rm[id_baru] = [nama_p, harga_p, stok_p]
+
+                add_menu(nama_p, harga_p, stok_p)
+
                 print(f"✔ {nama_p} berhasil ditambahkan ke menu!")
             except ValueError:
                 print("Gagal. Pastikan harga dan stok berupa angka.")
@@ -97,23 +105,38 @@ def menu_user(nama_user):
             pilih = int(input("Pilih ID Menu > "))
             if pilih == 0: break
             
-            if pilih in menu_rm:
-                if menu_rm[pilih][2] <= 0:
-                    print(f"Maaf, {menu_rm[pilih][0]} sedang habis!")
-                else:
-                    qty = int(input(f"Beli berapa {menu_rm[pilih][0]}? "))
-                    if qty > menu_rm[pilih][2]:
-                        print(f"Stok tidak cukup! (Sisa: {menu_rm[pilih][2]})")
-                    elif qty <= 0:
-                        print("Pembelian minimal 1.")
-                    else:
-                        menu_rm[pilih][2] -= qty
-                        subtotal = menu_rm[pilih][1] * qty
-                        total_bayar += subtotal
-                        keranjang.append([menu_rm[pilih][0], qty, subtotal])
-                        print(f"✔ Berhasil menambah {qty} {menu_rm[pilih][0]}")
+            menu = fetch_one(
+                    "SELECT * FROM menus WHERE id = ?",
+                    (pilih,)
+                    )
+
+            if not menu:
+                print("Menu tidak tersedia!")
+            elif menu["stock"] <= 0:
+                print(f"Maaf, {menu['name']} sedang habis!")
             else:
-                print("Menu tidak tersedia.")
+                qty = int(input(f"Beli berapa {menu['name']}? "))
+
+                if qty <= 0:
+                    print("Pembelian minimal 1.")
+                elif qty > menu["stock"]:
+                    print(f"Stok tidak cukup! (Sisa: {menu['stock']})")
+                else:
+                    execute(
+                            "UPDATE menus SET stock = stock - ? WHERE id = ?",
+                            (qty, pilih)
+                            )
+
+                    subtotal = menu["price"] * qty
+                    total_bayar += subtotal
+
+                    keranjang.append([
+                        menu["name"],
+                        qty,
+                        subtotal
+                        ])
+
+                    print(f"✔ Berhasil menambah {qty} {menu['name']}")
         except ValueError:
             print("Masukkan angka!")
         input("\nTekan Enter...")
@@ -148,14 +171,19 @@ def main():
             garis()
             print(f"{'MASUK AKUN':^50}")
             garis()
-            user = input("Username: ")
+            username = input("Username: ")
             password = getpass.getpass("Password: ")
+
+            account = fetch_one(
+                    "SELECT * FROM users WHERE username = ? AND password = ?", 
+                    (username, password)
+                    )
             
-            if user in akun_db and akun_db[user]["password"] == password:
-                if akun_db[user]["role"] == "admin":
-                    menu_admin(user)
+            if account:
+                if account["role"] == "admin":
+                    menu_admin(account['username'])
                 else:
-                    menu_user(user)
+                    menu_user(account['username'])
             else:
                 print("\nLogin gagal! Username atau password salah.")
                 input("Tekan Enter untuk kembali...")
@@ -165,14 +193,18 @@ def main():
             garis()
             print(f"{'DAFTAR AKUN BARU':^50}")
             garis()
-            user = input("Username Baru: ")
-            if user in akun_db:
+            username = input("Username Baru: ")
+
+            user_check = fetch_one("SELECT id FROM users WHERE username = ?", (username,))
+
+            if user_check:
                 print("Username sudah terdaftar!")
             else:
                 password = input("Password Baru: ")
                 role = input("Role (admin/user): ").lower()
                 if role in ["admin", "user"]:
-                    akun_db[user] = {"password": password, "role": role}
+                    register_user(username, password, role)
+
                     print(f"✔ Registrasi berhasil sebagai {role.upper()}!")
                 else:
                     print("Role tidak valid!")
@@ -183,4 +215,5 @@ def main():
             break
 
 if __name__ == "__main__":
+    migrate()
     main()
